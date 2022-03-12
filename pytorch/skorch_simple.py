@@ -61,10 +61,11 @@ class ClassifierModule(nn.Module):
         dropout = trial.suggest_float("dropout", 0.2, 0.5)
         input_dim = 28 * 28
         for i in range(n_layers):
-            output_dim = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
-            layers.append(nn.Linear(input_dim, output_dim))
-            layers.append(nn.Dropout(dropout))
-            layers.append(nn.ReLU())
+            output_dim = trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
+            layers.extend(
+                (nn.Linear(input_dim, output_dim), nn.Dropout(dropout), nn.ReLU())
+            )
+
             input_dim = output_dim
 
         layers.append(nn.Linear(input_dim, 10))
@@ -105,13 +106,13 @@ if __name__ == "__main__":
     study = optuna.create_study(direction="maximize", pruner=pruner)
     study.optimize(objective, n_trials=100, timeout=600)
 
-    print("Number of finished trials: {}".format(len(study.trials)))
+    print(f"Number of finished trials: {len(study.trials)}")
 
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

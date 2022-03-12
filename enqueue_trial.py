@@ -21,8 +21,7 @@ def objective(trial):
     classifier_obj = sklearn.svm.SVC(C=svc_c, gamma="auto")
 
     score = sklearn.model_selection.cross_val_score(classifier_obj, x, y, n_jobs=-1, cv=3)
-    accuracy = score.mean()
-    return accuracy
+    return score.mean()
 
 
 if __name__ == "__main__":
@@ -34,6 +33,6 @@ if __name__ == "__main__":
 
     study.optimize(objective, n_trials=100)
 
-    print("C={}, Value={}".format(study.trials[0].params["svc_c"], study.trials[0].value))
-    print("C={}, Value={}".format(study.trials[1].params["svc_c"], study.trials[1].value))
-    print("C={}, Value={}".format(study.best_trial.params["svc_c"], study.best_trial.value))
+    print(f'C={study.trials[0].params["svc_c"]}, Value={study.trials[0].value}')
+    print(f'C={study.trials[1].params["svc_c"]}, Value={study.trials[1].value}')
+    print(f'C={study.best_trial.params["svc_c"]}, Value={study.best_trial.value}')

@@ -59,8 +59,7 @@ def objective(trial):
     bst = xgb.train(param, dtrain)
     preds = bst.predict(dvalid)
     pred_labels = np.rint(preds)
-    accuracy = sklearn.metrics.accuracy_score(valid_y, pred_labels)
-    return accuracy
+    return sklearn.metrics.accuracy_score(valid_y, pred_labels)
 
 
 if __name__ == "__main__":
@@ -71,7 +70,7 @@ if __name__ == "__main__":
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

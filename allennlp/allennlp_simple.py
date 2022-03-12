@@ -82,11 +82,12 @@ def create_model(vocab, trial):
     )
 
     embedder = allennlp.modules.text_field_embedders.BasicTextFieldEmbedder({"tokens": embedding})
-    model = allennlp.models.BasicClassifier(
-        text_field_embedder=embedder, seq2vec_encoder=encoder, dropout=dropout, vocab=vocab
+    return allennlp.models.BasicClassifier(
+        text_field_embedder=embedder,
+        seq2vec_encoder=encoder,
+        dropout=dropout,
+        vocab=vocab,
     )
-
-    return model
 
 
 def objective(trial):
@@ -94,26 +95,29 @@ def objective(trial):
     model = create_model(vocab, trial)
 
     if DEVICE > -1:
-        model.to(torch.device("cuda:{}".format(DEVICE)))
+        model.to(torch.device(f"cuda:{DEVICE}"))
 
     lr = trial.suggest_float("lr", 1e-3, 1e-1, log=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 
-    serialization_dir = os.path.join(MODEL_DIR, "trial_{}".format(trial.number))
+    serialization_dir = os.path.join(MODEL_DIR, f"trial_{trial.number}")
     trainer = allennlp.training.GradientDescentTrainer(
         model=model,
         optimizer=optimizer,
         data_loader=train_data_loader,
         validation_data_loader=validation_data_loader,
-        validation_metric="+" + TARGET_METRIC,
-        patience=None,  # `patience=None` since it could conflict with AllenNLPPruningCallback
+        validation_metric=f"+{TARGET_METRIC}",
+        patience=None,
         num_epochs=30,
         cuda_device=DEVICE,
         serialization_dir=serialization_dir,
-        callbacks=[AllenNLPPruningCallback(trial, "validation_" + TARGET_METRIC)],
+        callbacks=[
+            AllenNLPPruningCallback(trial, "validation_" + TARGET_METRIC)
+        ],
     )
+
     metrics = trainer.train()
-    return metrics["best_validation_" + TARGET_METRIC]
+    return metrics[f"best_validation_{TARGET_METRIC}"]
 
 
 if __name__ == "__main__":
@@ -140,6 +144,6 @@ if __name__ == "__main__":
     print("  Value: ", trial.value)
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")
 
     shutil.rmtree(MODEL_DIR)

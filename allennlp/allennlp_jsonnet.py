@@ -35,7 +35,7 @@ def objective(trial):
     trial.suggest_int("NUM_FILTERS", 16, 32)
     trial.suggest_int("HIDDEN_SIZE", 16, 32)
 
-    serialization_dir = os.path.join(MODEL_DIR, "test_{}".format(trial.number))
+    serialization_dir = os.path.join(MODEL_DIR, f"test_{trial.number}")
     executor = AllenNLPExecutor(trial, CONFIG_PATH, serialization_dir, force=True)
 
     return executor.run()
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     print("  Value: ", trial.value)
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")
 
     dump_best_config(CONFIG_PATH, BEST_CONFIG_PATH, study)
     print("\nCreated optimized AllenNLP config to `{}`.".format(BEST_CONFIG_PATH))

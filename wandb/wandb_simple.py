@@ -37,9 +37,7 @@ def objective(trial):
     clf = RandomForestClassifier(**params)
     clf.fit(x_train, y_train)
     pred = clf.predict(x_valid)
-    score = accuracy_score(y_valid, pred)
-
-    return score
+    return accuracy_score(y_valid, pred)
 
 
 if __name__ == "__main__":
@@ -58,4 +56,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

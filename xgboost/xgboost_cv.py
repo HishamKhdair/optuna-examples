@@ -39,7 +39,7 @@ def objective(trial):
         "colsample_bytree": trial.suggest_float("colsample_bytree", 0.2, 1.0),
     }
 
-    if param["booster"] == "gbtree" or param["booster"] == "dart":
+    if param["booster"] in ["gbtree", "dart"]:
         param["max_depth"] = trial.suggest_int("max_depth", 1, 9)
         # minimum child weight, larger the term more conservative the tree.
         param["min_child_weight"] = trial.suggest_int("min_child_weight", 2, 10)
@@ -68,12 +68,10 @@ def objective(trial):
     trial.set_user_attr("n_estimators", len(xgb_cv_results))
 
     # Save cross-validation results.
-    filepath = os.path.join(CV_RESULT_DIR, "{}.csv".format(trial.number))
+    filepath = os.path.join(CV_RESULT_DIR, f"{trial.number}.csv")
     xgb_cv_results.to_csv(filepath, index=False)
 
-    # Extract the best score.
-    best_score = xgb_cv_results["test-auc-mean"].values[-1]
-    return best_score
+    return xgb_cv_results["test-auc-mean"].values[-1]
 
 
 if __name__ == "__main__":
@@ -87,11 +85,11 @@ if __name__ == "__main__":
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")
 
-    print("  Number of estimators: {}".format(trial.user_attrs["n_estimators"]))
+    print(f'  Number of estimators: {trial.user_attrs["n_estimators"]}')
 
     shutil.rmtree(CV_RESULT_DIR)

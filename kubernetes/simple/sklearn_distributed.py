@@ -37,18 +37,14 @@ def objective(trial):
         )
 
     score = sklearn.model_selection.cross_val_score(classifier_obj, x, y, n_jobs=-1, cv=3)
-    accuracy = score.mean()
-    return accuracy
+    return score.mean()
 
 
 if __name__ == "__main__":
     study = optuna.load_study(
         study_name="kubernetes",
-        storage="postgresql://{}:{}@postgres:5432/{}".format(
-            os.environ["POSTGRES_USER"],
-            os.environ["POSTGRES_PASSWORD"],
-            os.environ["POSTGRES_DB"],
-        ),
+        storage=f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@postgres:5432/{os.environ["POSTGRES_DB"]}',
     )
+
     study.optimize(objective, n_trials=20)
     print(study.best_trial)

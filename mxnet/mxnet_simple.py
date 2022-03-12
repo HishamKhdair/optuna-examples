@@ -41,14 +41,12 @@ def create_model(trial):
     data = mx.symbol.Variable("data")
     data = mx.sym.flatten(data=data)
     for i in range(n_layers):
-        num_hidden = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
+        num_hidden = trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
         data = mx.symbol.FullyConnected(data=data, num_hidden=num_hidden)
         data = mx.symbol.Activation(data=data, act_type="relu")
 
     data = mx.symbol.FullyConnected(data=data, num_hidden=10)
-    mlp = mx.symbol.SoftmaxOutput(data=data, name="softmax")
-
-    return mlp
+    return mx.symbol.SoftmaxOutput(data=data, name="softmax")
 
 
 def create_optimizer(trial):
@@ -59,12 +57,10 @@ def create_optimizer(trial):
 
     if optimizer_name == "Adam":
         adam_lr = trial.suggest_float("adam_lr", 1e-5, 1e-1, log=True)
-        optimizer = mx.optimizer.Adam(learning_rate=adam_lr, wd=weight_decay)
+        return mx.optimizer.Adam(learning_rate=adam_lr, wd=weight_decay)
     else:
         momentum_sgd_lr = trial.suggest_float("momentum_sgd_lr", 1e-5, 1e-1, log=True)
-        optimizer = mx.optimizer.SGD(momentum=momentum_sgd_lr, wd=weight_decay)
-
-    return optimizer
+        return mx.optimizer.SGD(momentum=momentum_sgd_lr, wd=weight_decay)
 
 
 def objective(trial):
@@ -122,4 +118,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

@@ -43,9 +43,10 @@ class Net(nn.Module):
 
         input_dim: int = 28 * 28
         for output_dim in output_dims:
-            layers.append(nn.Linear(input_dim, output_dim))
-            layers.append(nn.ReLU())
-            layers.append(nn.Dropout(dropout))
+            layers.extend(
+                (nn.Linear(input_dim, output_dim), nn.ReLU(), nn.Dropout(dropout))
+            )
+
             input_dim = output_dim
 
         layers.append(nn.Linear(input_dim, CLASSES))
@@ -119,8 +120,10 @@ def objective(trial: optuna.trial.Trial) -> float:
     n_layers = trial.suggest_int("n_layers", 1, 3)
     dropout = trial.suggest_float("dropout", 0.2, 0.5)
     output_dims = [
-        trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True) for i in range(n_layers)
+        trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
+        for i in range(n_layers)
     ]
+
 
     model = LightningNet(dropout, output_dims)
     datamodule = FashionMNISTDataModule(data_dir=DIR, batch_size=BATCHSIZE)
@@ -131,10 +134,11 @@ def objective(trial: optuna.trial.Trial) -> float:
         enable_checkpointing=False,
         max_epochs=EPOCHS,
         gpus=-1 if torch.cuda.is_available() else None,
-        accelerator="ddp_cpu" if not torch.cuda.is_available() else None,
-        num_processes=os.cpu_count() if not torch.cuda.is_available() else None,
+        accelerator=None if torch.cuda.is_available() else "ddp_cpu",
+        num_processes=None if torch.cuda.is_available() else os.cpu_count(),
         callbacks=[PyTorchLightningPruningCallback(trial, monitor="val_acc")],
     )
+
     hyperparameters = dict(n_layers=n_layers, dropout=dropout, output_dims=output_dims)
     trainer.logger.log_hyperparams(hyperparameters)
     trainer.fit(model, datamodule=datamodule)
@@ -169,13 +173,13 @@ if __name__ == "__main__":
     )
     study.optimize(objective, n_trials=100, timeout=600)
 
-    print("Number of finished trials: {}".format(len(study.trials)))
+    print(f"Number of finished trials: {len(study.trials)}")
 
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

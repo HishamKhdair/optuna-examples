@@ -8,6 +8,7 @@ You can run this example as follows:
     $ python sb3_simple.py
 
 """
+
 from typing import Any
 from typing import Dict
 
@@ -25,7 +26,7 @@ N_TRIALS = 100
 N_STARTUP_TRIALS = 5
 N_EVALUATIONS = 2
 N_TIMESTEPS = int(2e4)
-EVAL_FREQ = int(N_TIMESTEPS / N_EVALUATIONS)
+EVAL_FREQ = N_TIMESTEPS // N_EVALUATIONS
 N_EVAL_EPISODES = 3
 
 ENV_ID = "CartPole-v1"
@@ -170,8 +171,8 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")
 
     print("  User attrs:")
     for key, value in trial.user_attrs.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

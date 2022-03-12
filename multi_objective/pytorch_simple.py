@@ -38,16 +38,13 @@ def define_model(trial):
 
     in_features = 28 * 28
     for i in range(n_layers):
-        out_features = trial.suggest_int("n_units_l{}".format(i), 4, 128)
-        layers.append(nn.Linear(in_features, out_features))
-        layers.append(nn.ReLU())
-        p = trial.suggest_float("dropout_l{}".format(i), 0.2, 0.5)
+        out_features = trial.suggest_int(f"n_units_l{i}", 4, 128)
+        layers.extend((nn.Linear(in_features, out_features), nn.ReLU()))
+        p = trial.suggest_float(f"dropout_l{i}", 0.2, 0.5)
         layers.append(nn.Dropout(p))
 
         in_features = out_features
-    layers.append(nn.Linear(in_features, CLASSES))
-    layers.append(nn.LogSoftmax(dim=1))
-
+    layers.extend((nn.Linear(in_features, CLASSES), nn.LogSoftmax(dim=1)))
     return nn.Sequential(*layers)
 
 
@@ -87,8 +84,8 @@ def objective(trial):
 
     # Training of the model.
     model.train()
-    for epoch in range(EPOCHS):
-        for batch_idx, (data, target) in enumerate(train_loader):
+    for _ in range(EPOCHS):
+        for data, target in train_loader:
             data, target = data.view(-1, 28 * 28).to(DEVICE), target.to(DEVICE)
 
             optimizer.zero_grad()
@@ -101,7 +98,7 @@ def objective(trial):
     model.eval()
     correct = 0
     with torch.no_grad():
-        for batch_idx, (data, target) in enumerate(val_loader):
+        for data, target in val_loader:
             data, target = data.view(-1, 28 * 28).to(DEVICE), target.to(DEVICE)
             output = model(data)
             pred = output.argmax(dim=1, keepdim=True)  # Get the index of the max log-probability.
@@ -124,6 +121,6 @@ if __name__ == "__main__":
     trials = sorted(study.best_trials, key=lambda t: t.values)
 
     for trial in trials:
-        print("  Trial#{}".format(trial.number))
-        print("    Values: FLOPS={}, accuracy={}".format(trial.values[0], trial.values[1]))
-        print("    Params: {}".format(trial.params))
+        print(f"  Trial#{trial.number}")
+        print(f"    Values: FLOPS={trial.values[0]}, accuracy={trial.values[1]}")
+        print(f"    Params: {trial.params}")

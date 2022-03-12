@@ -34,8 +34,7 @@ class Objective(object):
             )
 
         score = sklearn.model_selection.cross_val_score(classifier_obj, x, y, n_jobs=-1, cv=3)
-        accuracy = score.mean()
-        return accuracy
+        return score.mean()
 
 
 if __name__ == "__main__":

@@ -37,17 +37,15 @@ def create_model(trial):
     layers = []
 
     for i in range(n_layers):
-        output_dim = int(trial.suggest_float("n_units_l{}".format(i), 4, 128))
-        layers.append(nn.Linear(input_dim, output_dim))
-        layers.append(nn.ReLU())
-        layers.append(nn.Dropout(dropout))
+        output_dim = int(trial.suggest_float(f"n_units_l{i}", 4, 128))
+        layers.extend(
+            (nn.Linear(input_dim, output_dim), nn.ReLU(), nn.Dropout(dropout))
+        )
+
         input_dim = output_dim
 
-    layers.append(nn.Linear(input_dim, CLASSES))
-    layers.append(nn.LogSoftmax(dim=1))
-    model = nn.Sequential(*layers)
-
-    return model
+    layers.extend((nn.Linear(input_dim, CLASSES), nn.LogSoftmax(dim=1)))
+    return nn.Sequential(*layers)
 
 
 class LightningNet(pl.LightningModule):
@@ -116,12 +114,9 @@ def objective(trial):
 if __name__ == "__main__":
     study = optuna.load_study(
         study_name="k8s_mlflow",
-        storage="postgresql://{}:{}@postgres:5432/{}".format(
-            os.environ["POSTGRES_USER"],
-            os.environ["POSTGRES_PASSWORD"],
-            os.environ["POSTGRES_DB"],
-        ),
+        storage=f'postgresql://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}@postgres:5432/{os.environ["POSTGRES_DB"]}',
     )
+
     study.optimize(
         objective,
         n_trials=100,
@@ -129,13 +124,13 @@ if __name__ == "__main__":
         callbacks=[MLflowCallback(tracking_uri="http://mlflow:5000/", metric_name="val_accuracy")],
     )
 
-    print("Number of finished trials: {}".format(len(study.trials)))
+    print(f"Number of finished trials: {len(study.trials)}")
 
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

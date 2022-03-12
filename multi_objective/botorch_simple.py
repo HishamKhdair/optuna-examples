@@ -49,10 +49,9 @@ if __name__ == "__main__":
     trials = sorted(study.best_trials, key=lambda t: t.values)
 
     for trial in trials:
-        print("  Trial#{}".format(trial.number))
+        print(f"  Trial#{trial.number}")
         print(
-            "    Values: Values={}, Constraint={}".format(
-                trial.values, trial.user_attrs["constraint"][0]
-            )
+            f'    Values: Values={trial.values}, Constraint={trial.user_attrs["constraint"][0]}'
         )
-        print("    Params: {}".format(trial.params))
+
+        print(f"    Params: {trial.params}")

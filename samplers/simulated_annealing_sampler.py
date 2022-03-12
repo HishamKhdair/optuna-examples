@@ -72,9 +72,7 @@ class SimulatedAnnealingSampler(BaseSampler):
                 neighbor_high = min(current_value + width, param_distribution.high)
                 params[param_name] = self._rng.uniform(neighbor_low, neighbor_high)
             else:
-                raise NotImplementedError(
-                    "Unsupported distribution {}.".format(param_distribution)
-                )
+                raise NotImplementedError(f"Unsupported distribution {param_distribution}.")
 
         return params
 
@@ -125,4 +123,4 @@ if __name__ == "__main__":
     print("  Value: ", study.best_trial.value)
     print("  Params: ")
     for key, value in study.best_trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

@@ -73,21 +73,19 @@ def create_classifier(trial):
     n_layers = trial.suggest_int("n_layers", 1, 3)
     hidden_units = []
     for i in range(n_layers):
-        n_units = trial.suggest_int("n_units_l{}".format(i), 1, 128)
+        n_units = trial.suggest_int(f"n_units_l{i}", 1, 128)
         hidden_units.append(n_units)
 
     optimizer = create_optimizer(trial)
 
-    model_dir = "{}/{}".format(MODEL_DIR, trial.number)
-    classifier = tf.estimator.DNNClassifier(
+    model_dir = f"{MODEL_DIR}/{trial.number}"
+    return tf.estimator.DNNClassifier(
         feature_columns=[tf.feature_column.numeric_column("x", shape=[28 * 28])],
         hidden_units=hidden_units,
         model_dir=model_dir,
         n_classes=10,
         optimizer=optimizer,
     )
-
-    return classifier
 
 
 def objective(trial):
@@ -113,7 +111,7 @@ def main():
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")
 
     shutil.rmtree(MODEL_DIR)
 

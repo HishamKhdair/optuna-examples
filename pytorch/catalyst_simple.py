@@ -38,7 +38,7 @@ def define_model(trial: optuna.trial.Trial) -> nn.Sequential:
     input_dim = 28 * 28
     layers = [nn.Flatten()]
     for i in range(n_layers):
-        output_dim = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
+        output_dim = trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
         layers.append(nn.Linear(input_dim, output_dim))
         layers.append(nn.ReLU())
         layers.append(nn.Dropout(dropout))
@@ -121,13 +121,13 @@ if __name__ == "__main__":
     study = optuna.create_study(direction="maximize", pruner=pruner)
     study.optimize(objective, n_trials=10, timeout=600)
 
-    print("Number of finished trials: {}".format(len(study.trials)))
+    print(f"Number of finished trials: {len(study.trials)}")
 
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

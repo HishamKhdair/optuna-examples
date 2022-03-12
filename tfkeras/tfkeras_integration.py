@@ -87,11 +87,7 @@ def objective(trial):
     tf.keras.backend.clear_session()
 
     # Metrics to be monitored by Optuna.
-    if tf.__version__ >= "2":
-        monitor = "val_accuracy"
-    else:
-        monitor = "val_acc"
-
+    monitor = "val_accuracy" if tf.__version__ >= "2" else "val_acc"
     # Create tf.keras model instance.
     model = create_model(trial)
 
@@ -135,7 +131,7 @@ def show_result(study):
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")
 
 
 def main():

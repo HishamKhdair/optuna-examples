@@ -33,7 +33,7 @@ if __name__ == "__main__":
         objective, n_trials=50, callbacks=[MaxTrialsCallback(10, states=(TrialState.COMPLETE,))]
     )
     trials = study.trials_dataframe()
-    print("Number of completed trials: {}".format(len(trials[trials.state == "COMPLETE"])))
+    print(f'Number of completed trials: {len(trials[trials.state == "COMPLETE"])}')
 
     print("Best trial:")
     trial = study.best_trial
@@ -42,4 +42,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

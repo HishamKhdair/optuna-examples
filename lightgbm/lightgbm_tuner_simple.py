@@ -5,6 +5,7 @@ In this example, we optimize the validation log loss of cancer detection.
 
 """
 
+
 import numpy as np
 import optuna.integration.lightgbm as lgb
 
@@ -40,7 +41,7 @@ if __name__ == "__main__":
 
     best_params = model.params
     print("Best params:", best_params)
-    print("  Accuracy = {}".format(accuracy))
+    print(f"  Accuracy = {accuracy}")
     print("  Params: ")
     for key, value in best_params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

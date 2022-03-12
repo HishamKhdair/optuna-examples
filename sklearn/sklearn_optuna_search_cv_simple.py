@@ -6,6 +6,7 @@ Classifier is from scikit-learn.
 
 """
 
+
 import optuna
 
 from sklearn.datasets import load_iris
@@ -33,4 +34,4 @@ if __name__ == "__main__":
     print("  Value: ", trial.value)
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

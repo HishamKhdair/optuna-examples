@@ -40,7 +40,7 @@ def create_model(trial):
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Flatten())
     for i in range(n_layers):
-        num_hidden = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
+        num_hidden = trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
         model.add(
             tf.keras.layers.Dense(
                 num_hidden,
@@ -73,14 +73,13 @@ def create_optimizer(trial):
         )
         kwargs["momentum"] = trial.suggest_float("sgd_opt_momentum", 1e-5, 1e-1, log=True)
 
-    optimizer = getattr(tf.optimizers, optimizer_selected)(**kwargs)
-    return optimizer
+    return getattr(tf.optimizers, optimizer_selected)(**kwargs)
 
 
 def learn(model, optimizer, dataset, mode="eval"):
     accuracy = tf.metrics.Accuracy("accuracy", dtype=tf.float32)
 
-    for batch, (images, labels) in enumerate(dataset):
+    for images, labels in dataset:
         with tf.GradientTape() as tape:
             logits = model(images, training=(mode == "train"))
             loss_value = tf.reduce_mean(
@@ -148,4 +147,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

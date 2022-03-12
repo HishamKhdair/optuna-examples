@@ -26,7 +26,7 @@ def objective(trial):
     solver = trial.suggest_categorical("solver", ["admm", "gradient_descent", "proximal_grad"])
     C = trial.suggest_float("C", 0.0, 1.0)
 
-    if solver == "admm" or solver == "proximal_grad":
+    if solver in ["admm", "proximal_grad"]:
         penalty = trial.suggest_categorical("penalty", ["l1", "l2", "elastic_net"])
     else:
         # 'penalty' parameter isn't relevant for this solver,
@@ -38,8 +38,7 @@ def objective(trial):
     X_train, X_valid, y_train, y_valid = train_test_split(X, y)
     classifier.fit(X_train, y_train)
 
-    score = classifier.score(X_valid, y_valid)
-    return score
+    return classifier.score(X_valid, y_valid)
 
 
 if __name__ == "__main__":
@@ -55,4 +54,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

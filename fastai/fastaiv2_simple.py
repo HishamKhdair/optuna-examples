@@ -66,7 +66,7 @@ def objective(trial):
 
     n_channels = [3]
     for i in range(n_layers):
-        out_channels = trial.suggest_int("n_channels_{}".format(i), 3, 32)
+        out_channels = trial.suggest_int(f"n_channels_{i}", 3, 32)
         n_channels.append(out_channels)
     n_channels.append(2)
 
@@ -104,13 +104,13 @@ if __name__ == "__main__":
     study = optuna.create_study(direction="maximize", pruner=pruner)
     study.optimize(objective, n_trials=100, timeout=600)
 
-    print("Number of finished trials: {}".format(len(study.trials)))
+    print(f"Number of finished trials: {len(study.trials)}")
 
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

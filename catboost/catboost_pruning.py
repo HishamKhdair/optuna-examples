@@ -72,19 +72,19 @@ class CatBoostPruningCallback(object):
         step = info.iteration - 1
         if self._valid_name not in info.metrics:
             raise ValueError(
-                'The entry associated with the validation name "{}" '
-                "is not found in the evaluation result list {}.".format(self._valid_name, info)
+                f'The entry associated with the validation name "{self._valid_name}" is not found in the evaluation result list {info}.'
             )
+
         metrics = info.metrics[self._valid_name]
         if self._metric not in metrics:
             raise ValueError(
-                'The entry associated with the metric name "{}" '
-                "is not found in the evaluation result list {}.".format(self._metric, info)
+                f'The entry associated with the metric name "{self._metric}" is not found in the evaluation result list {info}.'
             )
+
         current_score = metrics[self._metric][-1]
         self._trial.report(current_score, step=step)
         if self._trial.should_prune():
-            self._message = "Trial was pruned at iteration {}.".format(step)
+            self._message = f"Trial was pruned at iteration {step}."
             self._pruned = True
             return False
         return True
@@ -133,9 +133,7 @@ def objective(trial: optuna.Trial) -> float:
 
     preds = gbm.predict(valid_x)
     pred_labels = np.rint(preds)
-    accuracy = accuracy_score(valid_y, pred_labels)
-
-    return accuracy
+    return accuracy_score(valid_y, pred_labels)
 
 
 if __name__ == "__main__":
@@ -144,13 +142,13 @@ if __name__ == "__main__":
     )
     study.optimize(objective, n_trials=100, timeout=600)
 
-    print("Number of finished trials: {}".format(len(study.trials)))
+    print(f"Number of finished trials: {len(study.trials)}")
 
     print("Best trial:")
     trial = study.best_trial
 
-    print("  Value: {}".format(trial.value))
+    print(f"  Value: {trial.value}")
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

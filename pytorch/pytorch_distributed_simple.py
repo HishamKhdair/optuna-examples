@@ -55,16 +55,13 @@ def define_model(trial):
 
     in_features = 28 * 28
     for i in range(n_layers):
-        out_features = trial.suggest_int("n_units_l{}".format(i), 4, 128)
-        layers.append(nn.Linear(in_features, out_features))
-        layers.append(nn.ReLU())
-        p = trial.suggest_float("dropout_l{}".format(i), 0.2, 0.5)
+        out_features = trial.suggest_int(f"n_units_l{i}", 4, 128)
+        layers.extend((nn.Linear(in_features, out_features), nn.ReLU()))
+        p = trial.suggest_float(f"dropout_l{i}", 0.2, 0.5)
         layers.append(nn.Dropout(p))
 
         in_features = out_features
-    layers.append(nn.Linear(in_features, CLASSES))
-    layers.append(nn.LogSoftmax(dim=1))
-
+    layers.extend((nn.Linear(in_features, CLASSES), nn.LogSoftmax(dim=1)))
     return nn.Sequential(*layers)
 
 
@@ -203,4 +200,4 @@ if __name__ == "__main__":
 
         print("  Params: ")
         for key, value in trial.params.items():
-            print("    {}: {}".format(key, value))
+            print(f"    {key}: {value}")

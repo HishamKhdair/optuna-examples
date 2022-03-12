@@ -36,7 +36,7 @@ def objective(trial):
         "alpha": trial.suggest_float("alpha", 1e-8, 1.0, log=True),
     }
 
-    if param["booster"] == "gbtree" or param["booster"] == "dart":
+    if param["booster"] in ["gbtree", "dart"]:
         param["max_depth"] = trial.suggest_int("max_depth", 1, 9)
         param["eta"] = trial.suggest_float("eta", 1e-8, 1.0, log=True)
         param["gamma"] = trial.suggest_float("gamma", 1e-8, 1.0, log=True)
@@ -52,8 +52,7 @@ def objective(trial):
     bst = xgb.train(param, dtrain, evals=[(dvalid, "validation")], callbacks=[pruning_callback])
     preds = bst.predict(dvalid)
     pred_labels = np.rint(preds)
-    accuracy = sklearn.metrics.accuracy_score(valid_y, pred_labels)
-    return accuracy
+    return sklearn.metrics.accuracy_score(valid_y, pred_labels)
 
 
 if __name__ == "__main__":

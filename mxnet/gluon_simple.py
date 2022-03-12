@@ -26,7 +26,7 @@ def define_model(trial):
     net = nn.Sequential()
     n_layers = trial.suggest_int("n_layers", 1, 3)
     for i in range(n_layers):
-        nodes = trial.suggest_int("n_units_l{}".format(i), 4, 128)
+        nodes = trial.suggest_int(f"n_units_l{i}", 4, 128)
         net.add(nn.Dense(nodes, activation="relu"))
     net.add(nn.Dense(10))
     return net
@@ -49,11 +49,7 @@ def validate(ctx, val_data, net):
 
 
 def objective(trial):
-    if CUDA:
-        ctx = mx.gpu(0)
-    else:
-        ctx = mx.cpu()
-
+    ctx = mx.gpu(0) if CUDA else mx.cpu()
     train_data = gluon.data.DataLoader(
         gluon.data.vision.MNIST("./data", train=True).transform(transform),
         shuffle=True,
@@ -131,4 +127,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

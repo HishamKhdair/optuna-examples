@@ -65,15 +65,13 @@ def calc_kl_dist(p, q):
 def calc_euc_dist(p, q):
     p_norm = np.diag(np.dot(p, p.T))
     q_norm = np.vstack(np.diag(np.dot(q, q.T)))
-    dist = np.sqrt(-2 * np.matmul(q, p.T) + p_norm + q_norm)
-    return dist
+    return np.sqrt(-2 * np.matmul(q, p.T) + p_norm + q_norm)
 
 
 def calc_cos_dist(p, q):
     p_norm = np.diag(np.dot(p, p.T))
     q_norm = np.vstack(np.diag(np.dot(q, q.T)))
-    dist = 1 - np.matmul(q, p.T) / (np.sqrt(p_norm) * np.sqrt(q_norm))
-    return dist
+    return 1 - np.matmul(q, p.T) / (np.sqrt(p_norm) * np.sqrt(q_norm))
 
 
 def calc_dist(p, q, metric):
@@ -102,8 +100,7 @@ def objective(trial):
     dist = calc_dist(x_ref_hist, x_valid_hist, metric)
 
     y_pred = np.argmin(dist, axis=1)
-    accuracy = sklearn.metrics.accuracy_score(y_valid, y_pred)
-    return accuracy
+    return sklearn.metrics.accuracy_score(y_valid, y_pred)
 
 
 if __name__ == "__main__":

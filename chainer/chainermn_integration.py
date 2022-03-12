@@ -39,9 +39,8 @@ def create_model(trial):
 
     layers = []
     for i in range(n_layers):
-        n_units = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
-        layers.append(L.Linear(None, n_units))
-        layers.append(F.relu)
+        n_units = trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
+        layers.extend((L.Linear(None, n_units), F.relu))
     layers.append(L.Linear(None, 10))
 
     return chainer.Sequential(*layers)
@@ -137,4 +136,4 @@ if __name__ == "__main__":
         print("  Value: ", trial.value)
         print("  Params: ")
         for key, value in trial.params.items():
-            print("    {}: {}".format(key, value))
+            print(f"    {key}: {value}")

@@ -52,9 +52,9 @@ def create_model(trial):
     n_layers = trial.suggest_int("n_layers", 1, 3)
     model = Sequential()
     for i in range(n_layers):
-        num_hidden = trial.suggest_int("n_units_l{}".format(i), 4, 128, log=True)
+        num_hidden = trial.suggest_int(f"n_units_l{i}", 4, 128, log=True)
         model.add(Dense(num_hidden, activation="relu"))
-        dropout = trial.suggest_float("dropout_l{}".format(i), 0.2, 0.5)
+        dropout = trial.suggest_float(f"dropout_l{i}", 0.2, 0.5)
         model.add(Dropout(rate=dropout))
     model.add(Dense(CLASSES, activation="softmax"))
 
@@ -129,4 +129,4 @@ if __name__ == "__main__":
 
     print("  Params: ")
     for key, value in trial.params.items():
-        print("    {}: {}".format(key, value))
+        print(f"    {key}: {value}")

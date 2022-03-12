@@ -42,8 +42,7 @@ def objective(trial: optuna.trial.Trial) -> float:
     dropout_rate = trial.suggest_float("DROPOUT_RATE", 0.1, 0.2)
     optimizer = trial.suggest_categorical("OPTIMIZER", ["sgd", "adam"])
 
-    accuracy = train_test_model(num_units, dropout_rate, optimizer)  # type: ignore
-    return accuracy
+    return train_test_model(num_units, dropout_rate, optimizer)
 
 
 tensorboard_callback = TensorBoardCallback("logs/", metric_name="accuracy")
